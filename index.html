@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0d0c0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chords">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='36' fill='%230d0c0a'/><rect x='30' y='50' width='120' height='80' rx='4' fill='%23e8d9bd'/><rect x='45' y='50' width='14' height='50' fill='%230d0c0a'/><rect x='75' y='50' width='14' height='50' fill='%230d0c0a'/><rect x='105' y='50' width='14' height='50' fill='%230d0c0a'/><rect x='135' y='50' width='14' height='50' fill='%230d0c0a'/><circle cx='90' cy='140' r='8' fill='%23d4a574'/></svg>">
+<title>Chords & Scales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0c0a;
+    --bg-elev: #181512;
+    --bg-elev-2: #211c17;
+    --fg: #ebdfc6;
+    --fg-dim: #8a7c66;
+    --fg-faint: #554a3c;
+    --accent: #d4a574;
+    --accent-bright: #f0c18b;
+    --accent-dim: #7a5f3e;
+
+    --white-key: #ede0c4;
+    --white-key-active: #f2bc6e;
+    --white-key-root: #f79c3e;
+    --black-key: #1a1612;
+    --black-key-active: #c2893f;
+    --black-key-root: #ed8a2a;
+
+    --tonic: #e0a965;
+    --subdominant: #7fb0a8;
+    --dominant: #d67b5f;
+
+    --border: #2a2520;
+    --border-bright: #3d342b;
+
+    --shadow-1: 0 1px 2px rgba(0,0,0,.4);
+    --shadow-2: 0 4px 16px rgba(0,0,0,.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body { background: var(--bg); color: var(--fg); }
+
+  body {
+    font-family: ui-sans-serif, -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+    overscroll-behavior: none;
+  }
+
+  .serif { font-family: "EB Garamond", "Iowan Old Style", Georgia, serif; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  /* ---------- layout ---------- */
+  .app {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 14px 14px 80px;
+  }
+
+  header.top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 4px 2px 14px;
+  }
+  header.top h1 {
+    font-family: "EB Garamond", Georgia, serif;
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: 0.01em;
+    color: var(--fg);
+  }
+  header.top h1 .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    margin: 0 2px 3px 0;
+    vertical-align: middle;
+  }
+  .toggles {
+    display: flex;
+    gap: 6px;
+  }
+  .toggle {
+    font-size: 11px;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fg-dim);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .toggle.on {
+    border-color: var(--accent-dim);
+    background: rgba(212, 165, 116, 0.08);
+    color: var(--accent-bright);
+  }
+  .toggle:active { transform: scale(0.96); }
+
+  /* ---------- keyboard ---------- */
+  .piano-wrap {
+    background: linear-gradient(180deg, #1a1612 0%, #0f0c09 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: var(--shadow-2), inset 0 1px 0 rgba(255, 210, 150, 0.04);
+    margin-bottom: 14px;
+  }
+
+  .piano {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    display: flex;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .white-key {
+    flex: 1;
+    background: linear-gradient(180deg, var(--white-key) 0%, #d5c5a2 100%);
+    border-right: 1px solid rgba(0,0,0,0.15);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8px;
+    color: rgba(40, 30, 15, 0.6);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transition: background 0.12s, box-shadow 0.12s;
+    user-select: none;
+  }
+  .white-key:last-child { border-right: none; }
+  .white-key.in-chord {
+    background: linear-gradient(180deg, var(--white-key-active) 0%, #d99e52 100%);
+    color: #3b250a;
+  }
+  .white-key.is-root {
+    background: linear-gradient(180deg, var(--white-key-root) 0%, #d4761e 100%);
+    color: #2a1506;
+    box-shadow: inset 0 0 12px rgba(255, 200, 120, 0.5);
+  }
+
+  .black-keys-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .black-key {
+    position: absolute;
+    top: 0;
+    width: 5.4%;
+    height: 62%;
+    background: linear-gradient(180deg, #2d2620 0%, #0f0b08 100%);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.6), inset 0 -2px 0 rgba(0,0,0,0.3);
+    transform: translateX(-50%);
+    transition: background 0.12s, box-shadow 0.12s;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 6px;
+    font-size: 8px;
+    font-weight: 500;
+    color: transparent;
+  }
+  .black-key.in-chord {
+    background: linear-gradient(180deg, var(--black-key-active) 0%, #7d5423 100%);
+    color: #f4dcb0;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.6), inset 0 -2px 0 rgba(0,0,0,0.3), 0 0 8px rgba(194, 137, 63, 0.3);
+  }
+  .black-key.is-root {
+    background: linear-gradient(180deg, var(--black-key-root) 0%, #b05f15 100%);
+    color: #fff3d9;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.6), inset 0 -2px 0 rgba(0,0,0,0.3), 0 0 14px rgba(237, 138, 42, 0.55);
+  }
+
+  .label-degree { font-size: 8px; opacity: 0.7; display: block; }
+
+  /* ---------- current chord display ---------- */
+  .now-playing {
+    padding: 10px 6px 4px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .now-title {
+    font-family: "EB Garamond", Georgia, serif;
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--fg);
+    letter-spacing: 0.005em;
+  }
+  .now-title .root-letter {
+    color: var(--accent-bright);
+    font-weight: 600;
+  }
+  .now-title .type-name {
+    color: var(--fg);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .now-title .inv-tag {
+    display: inline-block;
+    margin-left: 6px;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    padding: 2px 7px;
+    border: 1px solid var(--fg-faint);
+    border-radius: 10px;
+    vertical-align: middle;
+    transform: translateY(-4px);
+  }
+  .now-title .sym {
+    color: var(--accent-bright);
+    font-style: italic;
+  }
+  .now-notes {
+    margin-top: 5px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    color: var(--fg-dim);
+    letter-spacing: 0.12em;
+  }
+  .now-notes .note { color: var(--fg); }
+  .now-notes .root-note { color: var(--accent-bright); font-weight: 600; }
+  .now-caption {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--fg-faint);
+    font-style: italic;
+  }
+
+  /* ---------- root selector ---------- */
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    margin: 16px 2px 8px;
+    font-weight: 500;
+  }
+
+  .roots {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 3px;
+  }
+  .root-btn {
+    aspect-ratio: 1 / 1.15;
+    border: 1px solid var(--border);
+    background: var(--bg-elev);
+    color: var(--fg);
+    border-radius: 5px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    transition: all 0.12s;
+  }
+  .root-btn.sharp { color: var(--fg-dim); font-size: 11px; }
+  .root-btn.active {
+    background: var(--accent);
+    color: #1a0f03;
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(212, 165, 116, 0.3);
+  }
+  .root-btn:active { transform: scale(0.94); }
+  .root-btn .companion-dot {
+    position: absolute;
+    top: 3px; right: 3px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .root-btn .companion-dot.tonic { background: var(--tonic); opacity: 1; }
+  .root-btn .companion-dot.subdominant { background: var(--subdominant); opacity: 1; }
+  .root-btn .companion-dot.dominant { background: var(--dominant); opacity: 1; }
+
+  /* ---------- category tabs ---------- */
+  .cat-tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-tab {
+    flex: 0 0 auto;
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--fg-dim);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all 0.12s;
+    font-family: inherit;
+  }
+  .cat-tab.active {
+    background: var(--bg-elev-2);
+    color: var(--accent-bright);
+    border-color: var(--border-bright);
+  }
+  .cat-tab:active { transform: scale(0.97); }
+
+  /* ---------- type grid ---------- */
+  .types {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+    gap: 5px;
+  }
+  .type-btn {
+    border: 1px solid var(--border);
+    background: var(--bg-elev);
+    color: var(--fg);
+    padding: 10px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+    font-family: inherit;
+    line-height: 1.2;
+    transition: all 0.12s;
+    position: relative;
+  }
+  .type-btn .symbol {
+    font-family: "EB Garamond", Georgia, serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .type-btn .name {
+    display: block;
+    font-size: 10px;
+    color: var(--fg-dim);
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+  }
+  .type-btn.active {
+    background: var(--accent);
+    color: #1a0f03;
+    border-color: var(--accent);
+  }
+  .type-btn.active .name { color: #3b2510; }
+  .type-btn:active { transform: scale(0.96); }
+
+  /* ---------- companions ---------- */
+  .companions {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 12px 12px;
+    margin-top: 4px;
+  }
+  .companions-title {
+    font-family: "EB Garamond", Georgia, serif;
+    font-size: 16px;
+    color: var(--fg);
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+  .companions-sub {
+    font-size: 11px;
+    color: var(--fg-dim);
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+  .companion-legend {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 10px;
+    color: var(--fg-dim);
+    letter-spacing: 0.04em;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+  }
+  .legend-dot.tonic { background: var(--tonic); }
+  .legend-dot.subdominant { background: var(--subdominant); }
+  .legend-dot.dominant { background: var(--dominant); }
+
+  .companion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 5px;
+  }
+  .companion-card {
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--border);
+    background: var(--bg-elev-2);
+    color: var(--fg);
+    border-radius: 5px;
+    padding: 8px 6px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.12s;
+    text-align: left;
+  }
+  .companion-card.tonic { border-left-color: var(--tonic); }
+  .companion-card.subdominant { border-left-color: var(--subdominant); }
+  .companion-card.dominant { border-left-color: var(--dominant); }
+  .companion-card:active { transform: scale(0.97); }
+  .comp-name {
+    font-family: "EB Garamond", Georgia, serif;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .comp-role {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10px;
+    color: var(--fg-dim);
+    margin-top: 2px;
+    letter-spacing: 0.03em;
+  }
+
+  .no-companions {
+    font-size: 12px;
+    color: var(--fg-faint);
+    font-style: italic;
+    padding: 8px 2px;
+  }
+
+  /* ---------- preview panel ---------- */
+  .preview-panel {
+    margin-top: 14px;
+    padding: 10px;
+    background: linear-gradient(180deg, #1a1612 0%, #0f0c09 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-2), inset 0 1px 0 rgba(255, 210, 150, 0.03);
+  }
+  .preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .preview-title {
+    font-family: "EB Garamond", Georgia, serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--fg);
+    letter-spacing: 0.005em;
+  }
+  .preview-title .p-root { color: var(--accent-bright); font-weight: 600; }
+  .preview-title .p-type { color: var(--fg); font-style: italic; font-weight: 400; }
+  .preview-actions { display: flex; gap: 5px; flex-shrink: 0; }
+  .preview-btn {
+    background: rgba(255,210,150,0.06);
+    border: 1px solid var(--border);
+    color: var(--fg-dim);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+  .preview-btn:hover { background: rgba(255,210,150,0.12); color: var(--fg); }
+  .preview-btn:active { transform: scale(0.95); }
+  .preview-btn.close {
+    font-size: 16px;
+    padding: 1px 8px 3px;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .preview-notes {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--fg-faint);
+    margin-bottom: 7px;
+    text-align: center;
+  }
+  .preview-notes .note { color: var(--fg-dim); }
+  .preview-notes .root-note { color: var(--accent-bright); font-weight: 600; }
+  .preview-piano {
+    height: 85px;
+  }
+  .preview-piano .white-key { padding-bottom: 4px; font-size: 8px; }
+  .preview-piano .black-key { padding-bottom: 3px; font-size: 7px; }
+
+  /* ---------- misc controls row ---------- */
+  .controls-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    align-items: center;
+  }
+  .inv-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  .inv-btns {
+    display: flex;
+    gap: 3px;
+    flex: 1;
+  }
+  .inv-btn {
+    flex: 1;
+    padding: 6px 4px;
+    font-size: 11px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--fg-dim);
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.12s;
+  }
+  .inv-btn.active {
+    background: var(--bg-elev-2);
+    color: var(--accent-bright);
+    border-color: var(--border-bright);
+  }
+
+  .play-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--accent-dim);
+    background: transparent;
+    color: var(--accent-bright);
+    border-radius: 6px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+  }
+  .play-btn:active { transform: scale(0.96); background: rgba(212, 165, 116, 0.08); }
+  .play-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* scale degree on keys when enabled */
+  .white-key .deg, .black-key .deg {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8.5px;
+    font-weight: 600;
+    color: inherit;
+    opacity: 0;
+    pointer-events: none;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  .white-key.in-chord .deg, .white-key.is-root .deg,
+  .black-key.in-chord .deg, .black-key.is-root .deg {
+    opacity: 0.85;
+  }
+
+  @media (max-width: 380px) {
+    .app { padding: 10px 10px 80px; }
+    .now-title { font-size: 26px; }
+    .types { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+    .piano { height: 120px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <h1 class="serif"><span class="dot"></span>Chords &amp; Scales</h1>
+    <div class="toggles">
+      <button class="toggle on" id="t-names">Notes</button>
+      <button class="toggle" id="t-degrees">Deg</button>
+      <button class="toggle" id="t-compact">1 Oct</button>
+      <button class="toggle" id="t-sound">Sound</button>
+    </div>
+  </header>
+
+  <!-- keyboard -->
+  <div class="piano-wrap">
+    <div class="piano" id="piano"></div>
+  </div>
+
+  <!-- current chord -->
+  <div class="now-playing">
+    <div class="now-title serif" id="now-title">C Major</div>
+    <div class="now-notes mono" id="now-notes"></div>
+    <div class="now-caption" id="now-caption"></div>
+  </div>
+
+  <!-- inversion + play -->
+  <div class="controls-row">
+    <div class="inv-label">INV</div>
+    <div class="inv-btns" id="inv-btns">
+      <button class="inv-btn active" data-inv="0">Root</button>
+      <button class="inv-btn" data-inv="1">1st</button>
+      <button class="inv-btn" data-inv="2">2nd</button>
+      <button class="inv-btn" data-inv="3">3rd</button>
+    </div>
+    <button class="play-btn" id="play-btn">♪ Play</button>
+  </div>
+
+  <!-- root -->
+  <div class="section-label">Root</div>
+  <div class="roots" id="roots"></div>
+
+  <!-- category + type -->
+  <div class="section-label">Family</div>
+  <div class="cat-tabs" id="cat-tabs"></div>
+  <div class="section-label" style="margin-top:14px;">Type</div>
+  <div class="types" id="types"></div>
+
+  <!-- companions -->
+  <div class="section-label">Common Companions</div>
+  <div class="companions" id="companions">
+    <div class="companions-title serif" id="comp-title"></div>
+    <div class="companions-sub" id="comp-sub"></div>
+    <div class="companion-legend">
+      <span class="legend-item"><span class="legend-dot tonic"></span>tonic</span>
+      <span class="legend-item"><span class="legend-dot subdominant"></span>subdominant</span>
+      <span class="legend-item"><span class="legend-dot dominant"></span>dominant</span>
+    </div>
+    <div class="companion-grid" id="comp-grid"></div>
+
+    <!-- preview piano: lights up when you tap a companion, doesn't replace the main view -->
+    <div class="preview-panel" id="preview-panel" style="display:none;">
+      <div class="preview-header">
+        <div class="preview-title serif" id="preview-title"></div>
+        <div class="preview-actions">
+          <button class="preview-btn" id="preview-octave" title="Toggle preview keyboard range">2 oct</button>
+          <button class="preview-btn" id="preview-promote" title="Switch the main keyboard to this">Use as main</button>
+          <button class="preview-btn close" id="preview-close" aria-label="Close preview">×</button>
+        </div>
+      </div>
+      <div class="preview-notes mono" id="preview-notes"></div>
+      <div class="piano preview-piano" id="preview-piano"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* =============================================================
+   Music-theory data
+   ============================================================= */
+const SHARP_NAMES = ['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const FLAT_NAMES  = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
+
+// Use flats by default for readability in most common keys
+const DISPLAY_NAMES = FLAT_NAMES;
+
+const CATEGORIES = ['Triads', '7ths', 'Extended', 'Modes', 'Scales', 'Maqam'];
+
+const TYPES = {
+  // ----- Triads -----
+  major:        { cat:'Triads', name:'Major',        sym:'',      intervals:[0,4,7],        degrees:['1','3','5'] },
+  minor:        { cat:'Triads', name:'Minor',        sym:'m',     intervals:[0,3,7],        degrees:['1','♭3','5'] },
+  diminished:   { cat:'Triads', name:'Diminished',   sym:'°',     intervals:[0,3,6],        degrees:['1','♭3','♭5'] },
+  augmented:    { cat:'Triads', name:'Augmented',    sym:'+',     intervals:[0,4,8],        degrees:['1','3','♯5'] },
+  sus2:         { cat:'Triads', name:'Suspended 2',  sym:'sus2',  intervals:[0,2,7],        degrees:['1','2','5'] },
+  sus4:         { cat:'Triads', name:'Suspended 4',  sym:'sus4',  intervals:[0,5,7],        degrees:['1','4','5'] },
+
+  // ----- 7ths -----
+  maj7:         { cat:'7ths', name:'Major 7',        sym:'maj7',  intervals:[0,4,7,11],     degrees:['1','3','5','7'] },
+  dom7:         { cat:'7ths', name:'Dominant 7',     sym:'7',     intervals:[0,4,7,10],     degrees:['1','3','5','♭7'] },
+  min7:         { cat:'7ths', name:'Minor 7',        sym:'m7',    intervals:[0,3,7,10],     degrees:['1','♭3','5','♭7'] },
+  m7b5:         { cat:'7ths', name:'Half-Diminished',sym:'ø7',    intervals:[0,3,6,10],     degrees:['1','♭3','♭5','♭7'] },
+  dim7:         { cat:'7ths', name:'Diminished 7',   sym:'°7',    intervals:[0,3,6,9],      degrees:['1','♭3','♭5','♭♭7'] },
+  mMaj7:        { cat:'7ths', name:'Minor–Major 7',  sym:'m(maj7)', intervals:[0,3,7,11],   degrees:['1','♭3','5','7'] },
+  aug7:         { cat:'7ths', name:'Augmented 7',    sym:'+7',    intervals:[0,4,8,10],     degrees:['1','3','♯5','♭7'] },
+  majS5:        { cat:'7ths', name:'Major 7 ♯5',     sym:'maj7♯5',intervals:[0,4,8,11],     degrees:['1','3','♯5','7'] },
+  six:          { cat:'7ths', name:'Sixth',          sym:'6',     intervals:[0,4,7,9],      degrees:['1','3','5','6'] },
+  min6:         { cat:'7ths', name:'Minor 6',        sym:'m6',    intervals:[0,3,7,9],      degrees:['1','♭3','5','6'] },
+
+  // ----- Extended -----
+  nine:         { cat:'Extended', name:'Dominant 9', sym:'9',     intervals:[0,4,7,10,14],  degrees:['1','3','5','♭7','9'] },
+  maj9:         { cat:'Extended', name:'Major 9',    sym:'maj9',  intervals:[0,4,7,11,14],  degrees:['1','3','5','7','9'] },
+  min9:         { cat:'Extended', name:'Minor 9',    sym:'m9',    intervals:[0,3,7,10,14],  degrees:['1','♭3','5','♭7','9'] },
+  thirteen:     { cat:'Extended', name:'Dominant 13',sym:'13',    intervals:[0,4,7,10,14,21], degrees:['1','3','5','♭7','9','13'] },
+  maj13:        { cat:'Extended', name:'Major 13',   sym:'maj13', intervals:[0,4,7,11,14,21], degrees:['1','3','5','7','9','13'] },
+  min11:        { cat:'Extended', name:'Minor 11',   sym:'m11',   intervals:[0,3,7,10,14,17], degrees:['1','♭3','5','♭7','9','11'] },
+  sevenB9:      { cat:'Extended', name:'7 ♭9',       sym:'7♭9',   intervals:[0,4,7,10,13],  degrees:['1','3','5','♭7','♭9'] },
+  sevenS9:      { cat:'Extended', name:'7 ♯9',       sym:'7♯9',   intervals:[0,4,7,10,15],  degrees:['1','3','5','♭7','♯9'] },
+  sevenS11:     { cat:'Extended', name:'7 ♯11',      sym:'7♯11',  intervals:[0,4,7,10,18],  degrees:['1','3','5','♭7','♯11'] },
+  sevenB13:     { cat:'Extended', name:'7 ♭13',      sym:'7♭13',  intervals:[0,4,7,10,20],  degrees:['1','3','5','♭7','♭13'] },
+  sixNine:      { cat:'Extended', name:'6/9',        sym:'6/9',   intervals:[0,4,7,9,14],   degrees:['1','3','5','6','9'] },
+
+  // ----- Modes (7-note) -----
+  ionian:       { cat:'Modes', name:'Ionian',        sym:'Ion',   intervals:[0,2,4,5,7,9,11],  degrees:['1','2','3','4','5','6','7'], isScale:true, note:'The major scale — bright, stable.' },
+  dorian:       { cat:'Modes', name:'Dorian',        sym:'Dor',   intervals:[0,2,3,5,7,9,10],  degrees:['1','2','♭3','4','5','6','♭7'], isScale:true, note:'Minor with a raised 6 — moody but not dark.' },
+  phrygian:     { cat:'Modes', name:'Phrygian',      sym:'Phr',   intervals:[0,1,3,5,7,8,10],  degrees:['1','♭2','♭3','4','5','♭6','♭7'], isScale:true, note:'Spanish/flamenco flavor from the ♭2.' },
+  lydian:       { cat:'Modes', name:'Lydian',        sym:'Lyd',   intervals:[0,2,4,6,7,9,11],  degrees:['1','2','3','♯4','5','6','7'], isScale:true, note:'Dreamy, floating — the ♯4 is the color tone.' },
+  mixolydian:   { cat:'Modes', name:'Mixolydian',    sym:'Mix',   intervals:[0,2,4,5,7,9,10],  degrees:['1','2','3','4','5','6','♭7'], isScale:true, note:'Major with a ♭7 — blues / dominant feel.' },
+  aeolian:      { cat:'Modes', name:'Aeolian',       sym:'Aeo',   intervals:[0,2,3,5,7,8,10],  degrees:['1','2','♭3','4','5','♭6','♭7'], isScale:true, note:'The natural minor scale.' },
+  locrian:      { cat:'Modes', name:'Locrian',       sym:'Loc',   intervals:[0,1,3,5,6,8,10],  degrees:['1','♭2','♭3','4','♭5','♭6','♭7'], isScale:true, note:'Unstable — built on the ♭5.' },
+
+  // ----- Scales -----
+  harmMin:      { cat:'Scales', name:'Harmonic Minor', sym:'H.min', intervals:[0,2,3,5,7,8,11], degrees:['1','2','♭3','4','5','♭6','7'], isScale:true, note:'Natural minor with a raised 7 — exotic leading tone.' },
+  melMin:       { cat:'Scales', name:'Melodic Minor',  sym:'M.min', intervals:[0,2,3,5,7,9,11], degrees:['1','2','♭3','4','5','6','7'], isScale:true, note:'Jazz-minor (ascending form).' },
+  phrDom:       { cat:'Scales', name:'Phrygian Dominant', sym:'PhDom', intervals:[0,1,4,5,7,8,10], degrees:['1','♭2','3','4','5','♭6','♭7'], isScale:true, note:'5th mode of harmonic minor — Hijaz on oud.' },
+  lydDom:       { cat:'Scales', name:'Lydian Dominant', sym:'LyDom', intervals:[0,2,4,6,7,9,10], degrees:['1','2','3','♯4','5','6','♭7'], isScale:true, note:'4th mode of melodic minor — over 7♯11 chords.' },
+  altered:      { cat:'Scales', name:'Altered',         sym:'Alt', intervals:[0,1,3,4,6,8,10], degrees:['1','♭9','♯9','3','♯11','♭13','♭7'], isScale:true, note:'Super-locrian — over altered dominants.' },
+  wholeTone:    { cat:'Scales', name:'Whole Tone',      sym:'WT',  intervals:[0,2,4,6,8,10], degrees:['1','2','3','♯4','♯5','♯6'], isScale:true, note:'Symmetric — Debussy / dream sequences.' },
+  dimWH:        { cat:'Scales', name:'Diminished W–H',  sym:'Dim',  intervals:[0,2,3,5,6,8,9,11], degrees:['1','2','♭3','4','♭5','♭6','𝄫7','7'], isScale:true, note:'Symmetric 8-note — over diminished chords.' },
+  dimHW:        { cat:'Scales', name:'Diminished H–W',  sym:'Dim',  intervals:[0,1,3,4,6,7,9,10], degrees:['1','♭9','♯9','3','♯11','5','13','♭7'], isScale:true, note:'Symmetric 8-note — over dominant 7♭9 chords.' },
+  pentMaj:      { cat:'Scales', name:'Pentatonic Major',sym:'Pent', intervals:[0,2,4,7,9], degrees:['1','2','3','5','6'], isScale:true, note:'Always consonant, world-wide use.' },
+  pentMin:      { cat:'Scales', name:'Pentatonic Minor',sym:'Pent', intervals:[0,3,5,7,10], degrees:['1','♭3','4','5','♭7'], isScale:true, note:'Foundation of blues, rock, soul.' },
+  blues:        { cat:'Scales', name:'Blues',           sym:'Blu', intervals:[0,3,5,6,7,10], degrees:['1','♭3','4','♭5','5','♭7'], isScale:true, note:'Pentatonic minor plus the ♭5 "blue note".' },
+  bebopDom:     { cat:'Scales', name:'Bebop Dominant',  sym:'Beb', intervals:[0,2,4,5,7,9,10,11], degrees:['1','2','3','4','5','6','♭7','7'], isScale:true, note:'Mixolydian + passing 7 — for chromatic lines.' },
+  doubleHarmMaj:{ cat:'Scales', name:'Double Harmonic Major', sym:'DbH', intervals:[0,1,4,5,7,8,11], degrees:['1','♭2','3','4','5','♭6','7'], isScale:true, note:'Two aug-2 gaps. Same as Hijaz Kar.' },
+
+  // ----- Maqam (quarter tones approximated for piano) -----
+  ajam:         { cat:'Maqam', name:'Ajam',      sym:'Ajam', intervals:[0,2,4,5,7,9,11], degrees:['1','2','3','4','5','6','7'], isScale:true, note:'Like the major scale. The tonic tetrachord resembles Ionian.' },
+  nahawand:     { cat:'Maqam', name:'Nahawand',  sym:'Nah',  intervals:[0,2,3,5,7,8,10], degrees:['1','2','♭3','4','5','♭6','♭7'], isScale:true, note:'Like natural minor (Aeolian). Warm and familiar.' },
+  kurd:         { cat:'Maqam', name:'Kurd',      sym:'Krd',  intervals:[0,1,3,5,7,8,10], degrees:['1','♭2','♭3','4','5','♭6','♭7'], isScale:true, note:'Like Phrygian. Often built on D or G.' },
+  hijaz:        { cat:'Maqam', name:'Hijaz',     sym:'Hjz',  intervals:[0,1,4,5,7,8,10], degrees:['1','♭2','3','4','5','♭6','♭7'], isScale:true, note:'Same as Phrygian Dominant. The ♭2→3 augmented-2nd gap is signature.' },
+  hijazKar:     { cat:'Maqam', name:'Hijaz Kar', sym:'HKar', intervals:[0,1,4,5,7,8,11], degrees:['1','♭2','3','4','5','♭6','7'], isScale:true, note:'Double harmonic major — two aug-2nd gaps (♭2→3 and ♭6→7).' },
+  nawaAthar:    { cat:'Maqam', name:'Nawa Athar',sym:'NwAt', intervals:[0,2,3,6,7,8,11], degrees:['1','2','♭3','♯4','5','♭6','7'], isScale:true, note:'Double harmonic minor — dark, striking.' },
+  atharKurd:    { cat:'Maqam', name:'Athar Kurd',sym:'AtKd', intervals:[0,1,3,6,7,8,11], degrees:['1','♭2','♭3','♯4','5','♭6','7'], isScale:true, note:'Kurd tetrachord over Hijaz-Kar upper tetrachord.' },
+  saba:         { cat:'Maqam', name:'Saba',      sym:'Saba', intervals:[0,1,3,4,7,8,10], degrees:['1','♭2','♭3','♭4','5','♭6','♭7'], isScale:true, note:'True form uses half-flat 2. Signature ♭4 gives the "crying" quality.' },
+  bayati:       { cat:'Maqam', name:'Bayati',    sym:'Bay',  intervals:[0,1,3,5,7,8,10], degrees:['1','♭2','♭3','4','5','♭6','♭7'], isScale:true, note:'True form has half-flat 2 (between ♭2 and 2). Shown here as Phrygian-ish approximation.' },
+  rast:         { cat:'Maqam', name:'Rast',      sym:'Rast', intervals:[0,2,4,5,7,9,10], degrees:['1','2','3','4','5','6','♭7'], isScale:true, note:'True form uses half-flat 3 & 7. Shown here as Mixolydian-ish — the "sag" on the 7th.' },
+};
+
+/* ============ Companion logic ============= */
+/* For chord types: show functional companions (diatonic partners).
+   For scales: show related modes / parallel scale.              */
+
+const FN = { T:'tonic', S:'subdominant', D:'dominant' };
+
+const COMPANIONS = {
+  // major triad = I in major key
+  major: {
+    contextName: root => `${DISPLAY_NAMES[root]} Major`,
+    subtitle: 'diatonic chords — build full progressions',
+    list: [
+      { off:2,  type:'minor',      role:'ii',   fn:FN.S },
+      { off:4,  type:'minor',      role:'iii',  fn:FN.T },
+      { off:5,  type:'major',      role:'IV',   fn:FN.S },
+      { off:7,  type:'major',      role:'V',    fn:FN.D },
+      { off:9,  type:'minor',      role:'vi',   fn:FN.T },
+      { off:11, type:'diminished', role:'vii°', fn:FN.D },
+    ]
+  },
+  minor: {
+    contextName: root => `${DISPLAY_NAMES[root]} minor`,
+    subtitle: 'diatonic of natural minor — plus V (from harmonic minor)',
+    list: [
+      { off:2,  type:'diminished', role:'ii°',   fn:FN.S },
+      { off:3,  type:'major',      role:'♭III',  fn:FN.T },
+      { off:5,  type:'minor',      role:'iv',    fn:FN.S },
+      { off:7,  type:'minor',      role:'v',     fn:FN.D },
+      { off:7,  type:'major',      role:'V (H)', fn:FN.D },
+      { off:8,  type:'major',      role:'♭VI',   fn:FN.S },
+      { off:10, type:'major',      role:'♭VII',  fn:FN.D },
+    ]
+  },
+  diminished: {
+    contextName: root => `resolution partners`,
+    subtitle: 'as leading-tone dim (resolves up ♭2); share with its dim7 cousins',
+    list: [
+      { off:1,  type:'major',      role:'→ I',   fn:FN.T },
+      { off:1,  type:'minor',      role:'→ i',   fn:FN.T },
+    ]
+  },
+  augmented: {
+    contextName: root => `resolution partners`,
+    subtitle: 'augmented is symmetric — can resolve three ways',
+    list: [
+      { off:5,  type:'major', role:'→ up 4th', fn:FN.T },
+      { off:1,  type:'minor', role:'→ up ♭2',  fn:FN.T },
+      { off:9,  type:'minor', role:'→ up 6th', fn:FN.T },
+    ]
+  },
+  sus4: {
+    contextName: root => `${DISPLAY_NAMES[root]} sus → major`,
+    subtitle: 'sus chords want to resolve',
+    list: [
+      { off:0,  type:'major',  role:'→ Maj',  fn:FN.T },
+      { off:0,  type:'minor',  role:'→ min',  fn:FN.T },
+      { off:7,  type:'major',  role:'V',      fn:FN.D },
+    ]
+  },
+  sus2: {
+    contextName: root => `${DISPLAY_NAMES[root]} sus → major`,
+    subtitle: 'sus2 also resolves to the major/minor triad',
+    list: [
+      { off:0,  type:'major',  role:'→ Maj',  fn:FN.T },
+      { off:0,  type:'minor',  role:'→ min',  fn:FN.T },
+      { off:5,  type:'major',  role:'IV',     fn:FN.S },
+    ]
+  },
+
+  // 7ths
+  maj7: {
+    contextName: root => `${DISPLAY_NAMES[root]} Major`,
+    subtitle: 'diatonic 7th chords — jazz standard territory',
+    list: [
+      { off:2,  type:'min7', role:'ii7',   fn:FN.S },
+      { off:4,  type:'min7', role:'iii7',  fn:FN.T },
+      { off:5,  type:'maj7', role:'IVmaj7',fn:FN.S },
+      { off:7,  type:'dom7', role:'V7',    fn:FN.D },
+      { off:9,  type:'min7', role:'vi7',   fn:FN.T },
+      { off:11, type:'m7b5', role:'vii ø7',fn:FN.D },
+    ]
+  },
+  dom7: {
+    contextName: root => `${DISPLAY_NAMES[root]}7 — V in ${DISPLAY_NAMES[(root+5)%12]}`,
+    subtitle: 'the resolving chord — ii-V-I targets + tritone sub',
+    list: [
+      { off:5,  type:'maj7', role:'→ Imaj7', fn:FN.T },
+      { off:5,  type:'minor',role:'→ i',     fn:FN.T },
+      { off:7,  type:'min7', role:'ii7 of →',fn:FN.S },
+      { off:6,  type:'dom7', role:'Tritone sub', fn:FN.D },
+    ]
+  },
+  min7: {
+    contextName: root => `${DISPLAY_NAMES[root]}m7 — ii in ${DISPLAY_NAMES[(root+10)%12]}`,
+    subtitle: 'most commonly a ii chord in a ii-V-I',
+    list: [
+      { off:5,  type:'dom7', role:'V7',       fn:FN.D },
+      { off:10, type:'maj7', role:'→ Imaj7',  fn:FN.T },
+      // also as i minor:
+      { off:3,  type:'maj7', role:'♭IIImaj7 (rel.)', fn:FN.T },
+      { off:7,  type:'min7', role:'v7',       fn:FN.D },
+    ]
+  },
+  m7b5: {
+    contextName: root => `${DISPLAY_NAMES[root]}ø7 — ii° in ${DISPLAY_NAMES[(root+10)%12]} minor`,
+    subtitle: 'classic minor ii-V-i half-diminished',
+    list: [
+      { off:5,  type:'dom7', role:'V7',      fn:FN.D },
+      { off:5,  type:'sevenB9', role:'V7♭9', fn:FN.D },
+      { off:10, type:'minor',role:'→ i',     fn:FN.T },
+      { off:10, type:'mMaj7',role:'→ i(M7)', fn:FN.T },
+    ]
+  },
+  dim7: {
+    contextName: root => `resolution partners`,
+    subtitle: 'dim7 resolves up a ♭2, or functions as rootless V7♭9',
+    list: [
+      { off:1,  type:'major', role:'→ I (up ♭2)',  fn:FN.T },
+      { off:1,  type:'minor', role:'→ i (up ♭2)',  fn:FN.T },
+    ]
+  },
+  mMaj7: {
+    contextName: root => `${DISPLAY_NAMES[root]}m(maj7) — i in melodic minor`,
+    subtitle: 'tonic minor with major 7 — tense, cinematic',
+    list: [
+      { off:2,  type:'min7', role:'ii7',    fn:FN.S },
+      { off:7,  type:'dom7', role:'V7',     fn:FN.D },
+      { off:5,  type:'min7', role:'iv7',    fn:FN.S },
+    ]
+  },
+  aug7: {
+    contextName: root => `${DISPLAY_NAMES[root]}+7 — altered dominant`,
+    subtitle: 'built from whole-tone scale — strong push to resolution',
+    list: [
+      { off:5,  type:'maj7', role:'→ Imaj7', fn:FN.T },
+      { off:5,  type:'minor',role:'→ i',     fn:FN.T },
+    ]
+  },
+  majS5: {
+    contextName: root => `static tension`,
+    subtitle: 'maj7♯5 — floating, modern, related to lydian augmented',
+    list: [
+      { off:0,  type:'maj7', role:'releases to maj7', fn:FN.T },
+    ]
+  },
+  six: {
+    contextName: root => `${DISPLAY_NAMES[root]} Major`,
+    subtitle: 'sweeter tonic alternative to maj7 — same diatonic family',
+    list: [
+      { off:2,  type:'min7', role:'ii7',   fn:FN.S },
+      { off:5,  type:'maj7', role:'IV',    fn:FN.S },
+      { off:7,  type:'dom7', role:'V7',    fn:FN.D },
+      { off:9,  type:'min7', role:'vi7',   fn:FN.T },
+    ]
+  },
+  min6: {
+    contextName: root => `${DISPLAY_NAMES[root]} minor`,
+    subtitle: 'tonic minor alternative — common in jazz / samba',
+    list: [
+      { off:5,  type:'dom7', role:'IV7',    fn:FN.S },
+      { off:7,  type:'dom7', role:'V7',     fn:FN.D },
+      { off:3,  type:'maj7', role:'♭IIImaj7', fn:FN.T },
+    ]
+  },
+
+  // Extended — inherit from their parent chord
+  nine:     { _alias:'dom7' },
+  maj9:     { _alias:'maj7' },
+  min9:     { _alias:'min7' },
+  thirteen: { _alias:'dom7' },
+  maj13:    { _alias:'maj7' },
+  min11:    { _alias:'min7' },
+  sevenB9:  { _alias:'dom7' },
+  sevenS9:  { _alias:'dom7' },
+  sevenS11: { _alias:'dom7' },
+  sevenB13: { _alias:'dom7' },
+  sixNine:  { _alias:'maj7' },
+
+  // ----- Scales / Modes: show modes of same parent key ------
+  ionian:     { _modeOfParent:'major', _parentOffset:0 },
+  dorian:     { _modeOfParent:'major', _parentOffset:-2 },
+  phrygian:   { _modeOfParent:'major', _parentOffset:-4 },
+  lydian:     { _modeOfParent:'major', _parentOffset:-5 },
+  mixolydian: { _modeOfParent:'major', _parentOffset:-7 },
+  aeolian:    { _modeOfParent:'major', _parentOffset:-9 },
+  locrian:    { _modeOfParent:'major', _parentOffset:-11 },
+
+  // Maqam companions — modulations/jins relationships common in practice
+  ajam: {
+    contextName: root => `${DISPLAY_NAMES[root]} Ajam`,
+    subtitle: 'common modulations from Ajam',
+    list: [
+      { off:5,  type:'ajam',      role:'to IV (Ajam)',    fn:FN.S },
+      { off:7,  type:'nahawand',  role:'Nahawand on 5',   fn:FN.D },
+      { off:9,  type:'nahawand',  role:'relative Nahawand', fn:FN.T },
+    ]
+  },
+  nahawand: {
+    contextName: root => `${DISPLAY_NAMES[root]} Nahawand`,
+    subtitle: 'common modulations from Nahawand',
+    list: [
+      { off:3,  type:'ajam',    role:'relative Ajam',  fn:FN.T },
+      { off:5,  type:'nahawand',role:'to 4 (Nahawand)',fn:FN.S },
+      { off:7,  type:'hijaz',   role:'Hijaz on 5',     fn:FN.D },
+    ]
+  },
+  kurd: {
+    contextName: root => `${DISPLAY_NAMES[root]} Kurd`,
+    subtitle: 'Kurd (like Phrygian) — related maqamat',
+    list: [
+      { off:5,  type:'kurd',     role:'to 4 (Kurd)',   fn:FN.S },
+      { off:7,  type:'nahawand', role:'Nahawand on 5', fn:FN.D },
+      { off:3,  type:'ajam',     role:'relative Ajam', fn:FN.T },
+    ]
+  },
+  hijaz: {
+    contextName: root => `${DISPLAY_NAMES[root]} Hijaz`,
+    subtitle: 'Hijaz modulates often through its 4th and 5th',
+    list: [
+      { off:4,  type:'ajam',     role:'Ajam on 3',     fn:FN.T },
+      { off:5,  type:'nahawand', role:'Nahawand on 4', fn:FN.S },
+      { off:7,  type:'kurd',     role:'Kurd on 5',     fn:FN.D },
+      { off:7,  type:'hijaz',    role:'Hijaz on 5',    fn:FN.D },
+    ]
+  },
+  hijazKar: {
+    contextName: root => `${DISPLAY_NAMES[root]} Hijaz Kar`,
+    subtitle: 'double-harmonic — related scales',
+    list: [
+      { off:5,  type:'hijaz',    role:'Hijaz on 4',    fn:FN.S },
+      { off:7,  type:'hijazKar', role:'Hijaz Kar on 5',fn:FN.D },
+      { off:9,  type:'nahawand', role:'relative Nahawand', fn:FN.T },
+    ]
+  },
+  nawaAthar: {
+    contextName: root => `${DISPLAY_NAMES[root]} Nawa Athar`,
+    subtitle: 'double-harmonic minor territory',
+    list: [
+      { off:3,  type:'hijazKar', role:'Hijaz Kar ♭3',  fn:FN.T },
+      { off:7,  type:'nahawand', role:'Nahawand on 5', fn:FN.D },
+    ]
+  },
+  atharKurd: {
+    contextName: root => `${DISPLAY_NAMES[root]} Athar Kurd`,
+    subtitle: 'Kurd lower tetrachord + Hijaz-Kar upper',
+    list: [
+      { off:5,  type:'hijazKar', role:'Hijaz Kar on 4',fn:FN.S },
+      { off:7,  type:'kurd',     role:'Kurd on 5',     fn:FN.D },
+    ]
+  },
+  saba: {
+    contextName: root => `${DISPLAY_NAMES[root]} Saba`,
+    subtitle: 'the crying maqam — modulates through its ♭3',
+    list: [
+      { off:3,  type:'hijaz',    role:'Hijaz on ♭3',   fn:FN.T },
+      { off:5,  type:'nahawand', role:'Nahawand on 4', fn:FN.S },
+    ]
+  },
+  bayati: {
+    contextName: root => `${DISPLAY_NAMES[root]} Bayati`,
+    subtitle: 'Bayati often modulates to Rast or Hijaz on 4',
+    list: [
+      { off:3,  type:'rast',     role:'Rast on ♭3',    fn:FN.T },
+      { off:5,  type:'hijaz',    role:'Hijaz on 4',    fn:FN.S },
+      { off:5,  type:'nahawand', role:'Nahawand on 4', fn:FN.S },
+    ]
+  },
+  rast: {
+    contextName: root => `${DISPLAY_NAMES[root]} Rast`,
+    subtitle: 'Rast is a parent maqam — many modulations possible',
+    list: [
+      { off:5,  type:'rast',     role:'Rast on 4',    fn:FN.S },
+      { off:7,  type:'nahawand', role:'Nahawand on 5',fn:FN.D },
+      { off:9,  type:'bayati',   role:'Bayati on 6',  fn:FN.T },
+    ]
+  },
+
+  // other scales: no specific companion list, leave them
+  harmMin:   { _modeOfParent:null },
+  melMin:    { _modeOfParent:null },
+  phrDom:    { _parentCompanion:'dom7', _parentOffset:0 },
+  lydDom:    { _parentCompanion:'dom7', _parentOffset:0 },
+  altered:   { _parentCompanion:'dom7', _parentOffset:0 },
+  wholeTone: { _parentCompanion:'aug7', _parentOffset:0 },
+  dimWH:     { _parentCompanion:'dim7', _parentOffset:0 },
+  dimHW:     { _parentCompanion:'dom7', _parentOffset:0 },
+  pentMaj:   { _parentCompanion:'major', _parentOffset:0 },
+  pentMin:   { _parentCompanion:'minor', _parentOffset:0 },
+  blues:     { _parentCompanion:'minor', _parentOffset:0 },
+  bebopDom:  { _parentCompanion:'dom7', _parentOffset:0 },
+  doubleHarmMaj: { _parentCompanion:'hijazKar', _parentOffset:0 },
+};
+
+/* =============================================================
+   State
+   ============================================================= */
+const state = {
+  root: 0,           // 0 = C, 1 = C#/Db, etc.
+  type: 'major',
+  category: 'Triads',
+  showNames: true,
+  showDegrees: false,
+  sound: false,
+  inversion: 0,
+  compact: false,        // main 1-octave keyboard view
+  previewCompact: true,  // preview keyboard defaults to 1 octave — it's a quick-reference
+  preview: null,         // { root, type } when a companion is being previewed
+};
+
+/* =============================================================
+   DOM builders
+   ============================================================= */
+function buildPiano() {
+  const piano = document.getElementById('piano');
+  piano.innerHTML = '';
+
+  const octCount = state.compact ? 1 : 2;
+  // N octaves + final C. White keys per octave = 7, plus one closing C.
+  const whitePCsPerOct = [0,2,4,5,7,9,11];
+  const whitePCs = [];
+  const octaves = [];
+  for (let o = 0; o < octCount; o++) {
+    whitePCsPerOct.forEach(pc => { whitePCs.push(pc); octaves.push(o); });
+  }
+  whitePCs.push(0); octaves.push(octCount); // closing C
+  const totalWhite = whitePCs.length;
+
+  whitePCs.forEach((pc, idx) => {
+    const k = document.createElement('div');
+    k.className = 'white-key';
+    k.dataset.pc = pc;
+    k.dataset.idx = idx;
+    k.dataset.oct = octaves[idx];
+    k.innerHTML = `<span class="deg"></span><span class="name"></span>`;
+    piano.appendChild(k);
+  });
+
+  // black keys layer
+  const bl = document.createElement('div');
+  bl.className = 'black-keys-layer';
+  const bkPattern = [
+    { pc:1,  afterWhite:0 },  // C#/Db
+    { pc:3,  afterWhite:1 },  // D#/Eb
+    { pc:6,  afterWhite:3 },  // F#/Gb
+    { pc:8,  afterWhite:4 },  // G#/Ab
+    { pc:10, afterWhite:5 },  // A#/Bb
+  ];
+  for (let oct = 0; oct < octCount; oct++) {
+    bkPattern.forEach(bk => {
+      const whiteIdx = oct * 7 + bk.afterWhite;
+      const leftPct = ((whiteIdx + 1) / totalWhite) * 100;
+      const el = document.createElement('div');
+      el.className = 'black-key';
+      el.dataset.pc = bk.pc;
+      el.dataset.oct = oct;
+      el.style.left = leftPct + '%';
+      el.innerHTML = `<span class="deg"></span>`;
+      bl.appendChild(el);
+    });
+  }
+  piano.appendChild(bl);
+}
+
+// Build the smaller preview piano (same layout as main, independent 1/2 octave setting).
+function buildPreviewPiano() {
+  const piano = document.getElementById('preview-piano');
+  if (!piano) return;
+  piano.innerHTML = '';
+
+  const octCount = state.previewCompact ? 1 : 2;
+  const whitePCsPerOct = [0,2,4,5,7,9,11];
+  const whitePCs = [];
+  const octaves = [];
+  for (let o = 0; o < octCount; o++) {
+    whitePCsPerOct.forEach(pc => { whitePCs.push(pc); octaves.push(o); });
+  }
+  whitePCs.push(0); octaves.push(octCount);
+  const totalWhite = whitePCs.length;
+
+  whitePCs.forEach((pc, idx) => {
+    const k = document.createElement('div');
+    k.className = 'white-key';
+    k.dataset.pc = pc;
+    k.dataset.idx = idx;
+    k.dataset.oct = octaves[idx];
+    k.innerHTML = `<span class="deg"></span>`;
+    piano.appendChild(k);
+  });
+
+  const bl = document.createElement('div');
+  bl.className = 'black-keys-layer';
+  const bkPattern = [
+    { pc:1,  afterWhite:0 },
+    { pc:3,  afterWhite:1 },
+    { pc:6,  afterWhite:3 },
+    { pc:8,  afterWhite:4 },
+    { pc:10, afterWhite:5 },
+  ];
+  for (let oct = 0; oct < octCount; oct++) {
+    bkPattern.forEach(bk => {
+      const whiteIdx = oct * 7 + bk.afterWhite;
+      const leftPct = ((whiteIdx + 1) / totalWhite) * 100;
+      const el = document.createElement('div');
+      el.className = 'black-key';
+      el.dataset.pc = bk.pc;
+      el.dataset.oct = oct;
+      el.style.left = leftPct + '%';
+      el.innerHTML = `<span class="deg"></span>`;
+      bl.appendChild(el);
+    });
+  }
+  piano.appendChild(bl);
+}
+
+// Compute the notes for an arbitrary (root, typeKey) in root position — for preview.
+function notesFor(root, typeKey) {
+  const t = TYPES[typeKey];
+  if (!t) return [];
+  const degrees = t.degrees || [];
+  return t.intervals.map((iv, i) => ({
+    pc: ((root + iv) % 12 + 12) % 12,
+    interval: iv,
+    degree: degrees[i] || '',
+    isRoot: i === 0,
+  }));
+}
+
+function showPreview(root, typeKey) {
+  // toggle off if same preview tapped again
+  if (state.preview && state.preview.root === root && state.preview.type === typeKey) {
+    closePreview();
+    return;
+  }
+  state.preview = { root, type: typeKey };
+  renderPreview();
+  // nudge into view on mobile
+  const panel = document.getElementById('preview-panel');
+  if (panel && panel.scrollIntoView) {
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  // play it if sound is on
+  if (state.sound) playPreview();
+}
+
+function closePreview() {
+  state.preview = null;
+  const panel = document.getElementById('preview-panel');
+  if (panel) panel.style.display = 'none';
+}
+
+function renderPreview() {
+  if (!state.preview) return;
+  const { root, type } = state.preview;
+  const t = TYPES[type];
+  if (!t) { closePreview(); return; }
+
+  const panel = document.getElementById('preview-panel');
+  panel.style.display = '';
+
+  const rootName = DISPLAY_NAMES[root];
+  document.getElementById('preview-title').innerHTML =
+    `<span class="p-root">${rootName}</span> <span class="p-type">${t.name}</span>`;
+
+  // octave toggle label reflects what a tap would switch to
+  const octBtn = document.getElementById('preview-octave');
+  if (octBtn) octBtn.textContent = state.previewCompact ? '2 oct' : '1 oct';
+
+  const notes = notesFor(root, type);
+  document.getElementById('preview-notes').innerHTML =
+    notes.map(n => `<span class="${n.isRoot ? 'root-note' : 'note'}">${noteNameAt(n.pc)}</span>`).join(' · ');
+
+  // clear all
+  document.querySelectorAll('#preview-piano .white-key, #preview-piano .black-key').forEach(k => {
+    k.classList.remove('in-chord', 'is-root');
+    const deg = k.querySelector('.deg');
+    if (deg) deg.textContent = '';
+  });
+  // highlight
+  notes.forEach(n => {
+    document.querySelectorAll(`#preview-piano [data-pc="${n.pc}"]`).forEach(k => {
+      if (!k.classList.contains('white-key') && !k.classList.contains('black-key')) return;
+      k.classList.add(n.isRoot ? 'is-root' : 'in-chord');
+      if (state.showDegrees) {
+        const deg = k.querySelector('.deg');
+        if (deg) deg.textContent = n.degree || '';
+      }
+    });
+  });
+}
+
+function playPreview() {
+  if (!state.preview) return;
+  ensureAudio();
+  const { root, type } = state.preview;
+  const t = TYPES[type];
+  if (!t) return;
+  const arp = t.isScale;
+  t.intervals.forEach((iv, i) => {
+    const pc = ((root + iv) % 12 + 12) % 12;
+    const octOffset = Math.floor((root + iv) / 12);
+    const freq = pcToFreq(pc, 4 + octOffset);
+    playTone(freq, arp ? i * 0.10 : 0, t.isScale ? 0.45 : 1.4);
+  });
+}
+
+function buildRoots() {
+  const wrap = document.getElementById('roots');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('button');
+    b.className = 'root-btn';
+    const isSharp = [1,3,6,8,10].includes(i);
+    if (isSharp) b.classList.add('sharp');
+    b.textContent = DISPLAY_NAMES[i];
+    b.dataset.root = i;
+    b.innerHTML = `<span class="companion-dot"></span>${DISPLAY_NAMES[i]}`;
+    b.addEventListener('click', () => {
+      state.root = i;
+      closePreview();
+      render();
+    });
+    wrap.appendChild(b);
+  }
+}
+
+function buildCatTabs() {
+  const wrap = document.getElementById('cat-tabs');
+  wrap.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'cat-tab';
+    b.textContent = cat;
+    b.dataset.cat = cat;
+    b.addEventListener('click', () => {
+      state.category = cat;
+      // switch type to first type in this category
+      const firstType = Object.keys(TYPES).find(k => TYPES[k].cat === cat);
+      if (firstType) state.type = firstType;
+      closePreview();
+      render();
+    });
+    wrap.appendChild(b);
+  });
+}
+
+function buildTypes() {
+  const wrap = document.getElementById('types');
+  wrap.innerHTML = '';
+  Object.entries(TYPES)
+    .filter(([,t]) => t.cat === state.category)
+    .forEach(([key, t]) => {
+      const b = document.createElement('button');
+      b.className = 'type-btn';
+      b.dataset.key = key;
+      // If symbol is empty, show just the name
+      const symbol = t.sym || t.name;
+      b.innerHTML = `<div class="symbol serif">${symbol}</div>${t.sym && t.sym !== t.name ? `<div class="name">${t.name}</div>` : ''}`;
+      b.addEventListener('click', () => {
+        state.type = key;
+        state.inversion = 0;
+        closePreview();
+        render();
+      });
+      wrap.appendChild(b);
+    });
+}
+
+/* =============================================================
+   Core render
+   ============================================================= */
+function noteNameAt(pc) {
+  return DISPLAY_NAMES[((pc % 12) + 12) % 12];
+}
+
+// Returns [{ pc, interval, degree, isRoot, originalIdx }, ...] sorted low→high
+function currentNotes() {
+  const t = TYPES[state.type];
+  if (!t) return [];
+  const origIntervals = t.intervals;
+  const degrees = t.degrees || [];
+
+  // Annotate each interval with its original index
+  let arr = origIntervals.map((iv, i) => ({ iv, origIdx: i }));
+
+  // Apply inversion for chords (not scales)
+  if (!t.isScale && state.inversion > 0) {
+    for (let i = 0; i < state.inversion && i < arr.length; i++) {
+      arr[i] = { ...arr[i], iv: arr[i].iv + 12 };
+    }
+    arr.sort((a, b) => a.iv - b.iv);
+  }
+
+  return arr.map(({ iv, origIdx }) => ({
+    pc: ((state.root + iv) % 12 + 12) % 12,
+    interval: iv,
+    degree: degrees[origIdx] || '',
+    isRoot: origIdx === 0,
+    originalIdx: origIdx,
+  }));
+}
+
+function render() {
+  const t = TYPES[state.type];
+  if (!t) return;
+
+  // --- root buttons
+  document.querySelectorAll('.root-btn').forEach(b => {
+    const i = parseInt(b.dataset.root);
+    b.classList.toggle('active', i === state.root);
+    // clear dot
+    const dot = b.querySelector('.companion-dot');
+    dot.className = 'companion-dot';
+  });
+
+  // --- category tabs
+  document.querySelectorAll('.cat-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.cat === t.cat);
+  });
+
+  // --- type buttons
+  buildTypes();
+  document.querySelectorAll('.type-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.key === state.type);
+  });
+
+  // --- now-playing display
+  const rootName = DISPLAY_NAMES[state.root];
+  const notes = currentNotes();
+  const degrees = t.degrees || [];
+
+  // Title: root letter + full type name (e.g. "C Major", "C Minor 7", "C Dorian")
+  // Include inversion marker for chords when not in root position
+  let invTag = '';
+  if (!t.isScale && state.inversion > 0) {
+    const invLabels = ['', '1st inv', '2nd inv', '3rd inv'];
+    invTag = ` <span class="inv-tag">${invLabels[state.inversion] || ''}</span>`;
+  }
+  document.getElementById('now-title').innerHTML =
+    `<span class="root-letter">${rootName}</span> <span class="type-name">${t.name}</span>${invTag}`;
+
+  // notes display — use isRoot from currentNotes() so inversions still mark the true root
+  const notesHTML = notes.map(n => {
+    const cls = n.isRoot ? 'root-note' : 'note';
+    return `<span class="${cls}">${noteNameAt(n.pc)}</span>`;
+  }).join(' · ');
+  document.getElementById('now-notes').innerHTML = notesHTML;
+
+  // caption (for scales: descriptive note; for chords: degree formula)
+  const caption = document.getElementById('now-caption');
+  if (t.note) {
+    caption.textContent = t.note;
+  } else {
+    caption.textContent = degrees.join(' · ');
+  }
+
+  // --- keyboard highlight (main piano only — preview has its own)
+  document.querySelectorAll('#piano .white-key, #piano .black-key').forEach(k => {
+    k.classList.remove('in-chord', 'is-root');
+    const deg = k.querySelector('.deg');
+    const name = k.querySelector('.name');
+    if (deg) deg.textContent = '';
+    if (name) name.textContent = state.showNames ? DISPLAY_NAMES[parseInt(k.dataset.pc)] : '';
+  });
+
+  // Highlight all matching PCs across the keyboard using currentNotes() for root/degree identity
+  notes.forEach(n => {
+    document.querySelectorAll(`#piano [data-pc="${n.pc}"]`).forEach(k => {
+      if (!k.classList.contains('white-key') && !k.classList.contains('black-key')) return;
+      k.classList.add(n.isRoot ? 'is-root' : 'in-chord');
+      if (state.showDegrees) {
+        const deg = k.querySelector('.deg');
+        if (deg) deg.textContent = n.degree || '';
+      }
+    });
+  });
+
+  // --- inversion availability
+  const invBtns = document.querySelectorAll('.inv-btn');
+  invBtns.forEach(b => {
+    const inv = parseInt(b.dataset.inv);
+    const available = !t.isScale && inv < t.intervals.length;
+    b.style.display = available ? '' : 'none';
+    b.classList.toggle('active', state.inversion === inv);
+  });
+
+  // --- companions
+  renderCompanions();
+
+  // --- toggles visual state
+  document.getElementById('t-names').classList.toggle('on', state.showNames);
+  document.getElementById('t-degrees').classList.toggle('on', state.showDegrees);
+  document.getElementById('t-compact').classList.toggle('on', state.compact);
+  document.getElementById('t-sound').classList.toggle('on', state.sound);
+}
+
+/* =============================================================
+   Companions rendering
+   ============================================================= */
+function resolveCompanions(typeKey) {
+  const def = COMPANIONS[typeKey];
+  if (!def) return null;
+  if (def._alias) return COMPANIONS[def._alias];
+  if (def._parentCompanion) return COMPANIONS[def._parentCompanion];
+  return def;
+}
+
+function renderCompanions() {
+  const t = TYPES[state.type];
+  const compTitle = document.getElementById('comp-title');
+  const compSub = document.getElementById('comp-sub');
+  const grid = document.getElementById('comp-grid');
+  grid.innerHTML = '';
+
+  // For modes: show the other modes of the same parent major
+  const modeDef = COMPANIONS[state.type];
+  if (modeDef && modeDef._modeOfParent === 'major') {
+    const parentRoot = ((state.root + modeDef._parentOffset) % 12 + 12) % 12;
+    compTitle.textContent = `Modes of ${DISPLAY_NAMES[parentRoot]} major`;
+    compSub.textContent = 'sibling modes share the same 7 notes — just a different tonic';
+    const modesMap = [
+      { type:'ionian',     offset: 0,  label:'I Ionian' },
+      { type:'dorian',     offset: 2,  label:'ii Dorian' },
+      { type:'phrygian',   offset: 4,  label:'iii Phrygian' },
+      { type:'lydian',     offset: 5,  label:'IV Lydian' },
+      { type:'mixolydian', offset: 7,  label:'V Mixolydian' },
+      { type:'aeolian',    offset: 9,  label:'vi Aeolian' },
+      { type:'locrian',    offset: 11, label:'vii Locrian' },
+    ];
+    modesMap.forEach(m => {
+      const r = (parentRoot + m.offset) % 12;
+      const card = document.createElement('button');
+      card.className = 'companion-card tonic';
+      card.innerHTML = `<div class="comp-name serif">${DISPLAY_NAMES[r]} ${TYPES[m.type].name}</div><div class="comp-role">${m.label}</div>`;
+      card.addEventListener('click', () => showPreview(r, m.type));
+      grid.appendChild(card);
+    });
+    return;
+  }
+
+  // Otherwise resolve a companion list
+  const def = resolveCompanions(state.type);
+  if (!def || !def.list) {
+    compTitle.textContent = '—';
+    compSub.textContent = '';
+    const empty = document.createElement('div');
+    empty.className = 'no-companions';
+    empty.textContent = 'No companion relationships defined for this one. Experiment!';
+    grid.appendChild(empty);
+    return;
+  }
+
+  compTitle.textContent = typeof def.contextName === 'function' ? def.contextName(state.root) : (def.contextName || '');
+  compSub.textContent = def.subtitle || '';
+
+  def.list.forEach(c => {
+    const r = ((state.root + c.off) % 12 + 12) % 12;
+    if (!TYPES[c.type]) return;
+    const typeDef = TYPES[c.type];
+    const card = document.createElement('button');
+    card.className = `companion-card ${c.fn}`;
+    const compSym = typeDef.sym || '';
+    const nameHtml = typeDef.isScale
+      ? `${DISPLAY_NAMES[r]} ${typeDef.name}`
+      : `${DISPLAY_NAMES[r]}<span style="color:var(--accent-bright);font-style:italic;"> ${compSym}</span>`;
+    card.innerHTML = `<div class="comp-name serif">${nameHtml}</div><div class="comp-role">${c.role}</div>`;
+    card.addEventListener('click', () => showPreview(r, c.type));
+    grid.appendChild(card);
+
+    // also put dot indicator on the root button
+    const rootBtn = document.querySelector(`.root-btn[data-root="${r}"]`);
+    if (rootBtn) {
+      const dot = rootBtn.querySelector('.companion-dot');
+      // prefer stronger function if collision: D > S > T
+      const cur = Array.from(dot.classList).find(x => ['tonic','subdominant','dominant'].includes(x));
+      const weights = { tonic:1, subdominant:2, dominant:3 };
+      if (!cur || weights[c.fn] > weights[cur]) {
+        dot.className = `companion-dot ${c.fn}`;
+      }
+    }
+  });
+}
+
+/* =============================================================
+   Audio (Web Audio API)
+   ============================================================= */
+let audioCtx = null;
+function ensureAudio() {
+  if (!audioCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) audioCtx = new AC();
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function pcToFreq(pc, octaveBase = 4) {
+  // MIDI: C4 = 60
+  const midi = 12 * (octaveBase + 1) + pc;
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+function playTone(freq, startDelay = 0, dur = 1.2) {
+  const ctx = ensureAudio();
+  if (!ctx) return;
+  const now = ctx.currentTime + startDelay;
+
+  // richer piano-ish tone: fundamental + a couple partials
+  const partials = [
+    { ratio: 1,   gain: 0.28, type: 'triangle' },
+    { ratio: 2,   gain: 0.08, type: 'sine' },
+    { ratio: 3,   gain: 0.04, type: 'sine' },
+  ];
+  const master = ctx.createGain();
+  master.gain.setValueAtTime(0, now);
+  master.gain.linearRampToValueAtTime(1, now + 0.01);
+  master.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+  master.connect(ctx.destination);
+
+  partials.forEach(p => {
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = p.type;
+    osc.frequency.value = freq * p.ratio;
+    g.gain.value = p.gain;
+    osc.connect(g);
+    g.connect(master);
+    osc.start(now);
+    osc.stop(now + dur + 0.05);
+  });
+}
+
+function playCurrent(arpeggio = false) {
+  if (!state.sound) return;
+  ensureAudio();
+  const t = TYPES[state.type];
+  const notes = currentNotes();
+  // For scales, play arpeggio always
+  const arp = t.isScale || arpeggio;
+  notes.forEach((n, i) => {
+    const iv = n.interval;
+    const pc = ((state.root + iv) % 12 + 12) % 12;
+    const octOffset = Math.floor((state.root + iv) / 12);
+    const freq = pcToFreq(pc, 4 + octOffset);
+    playTone(freq, arp ? i * 0.10 : 0, t.isScale ? 0.45 : 1.4);
+  });
+}
+
+/* =============================================================
+   Toggles & events
+   ============================================================= */
+document.getElementById('t-names').addEventListener('click', () => {
+  state.showNames = !state.showNames;
+  render();
+});
+document.getElementById('t-degrees').addEventListener('click', () => {
+  state.showDegrees = !state.showDegrees;
+  render();
+  if (state.preview) renderPreview();
+});
+document.getElementById('t-compact').addEventListener('click', () => {
+  state.compact = !state.compact;
+  buildPiano();
+  render();
+});
+document.getElementById('t-sound').addEventListener('click', () => {
+  state.sound = !state.sound;
+  if (state.sound) ensureAudio();
+  render();
+});
+
+document.getElementById('play-btn').addEventListener('click', () => {
+  // play regardless of sound toggle, but enable audio ctx
+  ensureAudio();
+  const wasSound = state.sound;
+  state.sound = true;
+  playCurrent(true); // always arpeggio for play button
+  state.sound = wasSound;
+});
+
+document.querySelectorAll('.inv-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    state.inversion = parseInt(b.dataset.inv);
+    render();
+  });
+});
+
+// tap a key to play just that pitch
+document.getElementById('piano').addEventListener('click', (e) => {
+  const key = e.target.closest('.white-key, .black-key');
+  if (!key) return;
+  ensureAudio();
+  const pc = parseInt(key.dataset.pc);
+  const oct = parseInt(key.dataset.oct);
+  playTone(pcToFreq(pc, 4 + oct), 0, 1.0);
+});
+
+// preview piano: tap a key to hear that pitch too
+document.getElementById('preview-piano').addEventListener('click', (e) => {
+  const key = e.target.closest('.white-key, .black-key');
+  if (!key) return;
+  ensureAudio();
+  const pc = parseInt(key.dataset.pc);
+  const oct = parseInt(key.dataset.oct);
+  playTone(pcToFreq(pc, 4 + oct), 0, 1.0);
+});
+
+// preview close button
+document.getElementById('preview-close').addEventListener('click', closePreview);
+
+// preview octave toggle (independent of main 1 Oct)
+document.getElementById('preview-octave').addEventListener('click', () => {
+  state.previewCompact = !state.previewCompact;
+  buildPreviewPiano();
+  if (state.preview) renderPreview();
+});
+
+// preview promote: switch main keyboard to whatever's in preview
+document.getElementById('preview-promote').addEventListener('click', () => {
+  if (!state.preview) return;
+  const { root, type } = state.preview;
+  const t = TYPES[type];
+  if (!t) return;
+  state.root = root;
+  state.type = type;
+  state.category = t.cat;
+  state.inversion = 0;
+  closePreview();
+  render();
+});
+
+/* =============================================================
+   Boot
+   ============================================================= */
+buildPiano();
+buildPreviewPiano();
+buildRoots();
+buildCatTabs();
+render();
+
+// prevent double-tap zoom on iOS for controls
+document.addEventListener('dblclick', e => e.preventDefault(), { passive:false });
+</script>
+</body>
+</html>
